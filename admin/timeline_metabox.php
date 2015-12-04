@@ -2,7 +2,7 @@
     <tbody>
     <tr class="form-field">
         <th valign="top" scope="row">
-            <label for="name"><?php _e('Name', 'custom_table_example')?></label>
+            <label for="name"><?php _e('Name')?></label>
         </th>
         <td>
             <input id="name" name="name" type="text" style="width: 95%" value="<?php echo esc_attr($item['name'])?>"
@@ -11,10 +11,10 @@
     </tr>
     <tr class="form-field">
         <th valign="top" scope="row">
-            <label for="email"><?php _e('Video URL')?></label>
+            <label for="videourl"><?php _e('Video URL')?></label>
         </th>
         <td>
-            <input id="email" name="videourl" type="url" style="width: 95%" value="<?php echo esc_attr($item['email'])?>"
+            <input id="email" name="videourl" type="url" style="width: 95%" value="<?php echo esc_attr($item['videourl'])?>"
                    size="50" class="code" placeholder="<?php _e('Video URL')?>" required>
         </td>
     </tr>

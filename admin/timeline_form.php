@@ -3,7 +3,7 @@
         <div class="icon32 icon32-posts-post" id="icon-edit"><br></div>
         <h2><?php _e('Timeline'); ?>
             <a class="add-new-h2" 
-               href="<?php echo get_admin_url(get_current_blog_id()); ?>admin.php?page=persons"><?php _e('back to list'); ?></a>
+               href="<?php echo get_admin_url(get_current_blog_id()); ?>admin.php?page=deno_timelines"><?php _e('back to list'); ?></a>
             <input type="submit" value="<?php _e('Save'); ?>" id="deno-new-timeline-submit" class="button-primary" name="submit">
         </h2>
     <?php
@@ -78,7 +78,8 @@
             <select class='deno-timeline-settings-select-post-content deno-timeline-settings-content_data' name='content_data'>
                 <option value="0">--- Select Post ---</option>
                 <% _.each(syncPosts, function(post) { %>
-                <option value="<%=post.id %>"><%=post.title %></option>
+                <% if(parseInt(content_data)==post.id) { selected=' selected'; } else { selected=''; } %>
+                <option value="<%=post.id %>"<%=selected %>><%=post.title %></option>
                 <% }); %>
             </select>                
             <% } %>

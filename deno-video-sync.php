@@ -176,7 +176,7 @@ if(is_admin())
             break;
         }
     }
-    wp_enqueue_style("jquery-ui-css", "http://ajax.googleapis.com/ajax/libs/jqueryui/$jqueryUIver/themes/ui-lightness/jquery-ui.min.css");
+    wp_enqueue_style("deno-timeline-jquery-ui-css", "http://ajax.googleapis.com/ajax/libs/jqueryui/$jqueryUIver/themes/ui-lightness/jquery-ui.min.css");
     add_action('admin_menu', array(DenoVideoSyncAdmin::getInstance(), 'adminMenu'));
     add_action('admin_init', array(DenoVideoSyncAdmin::getInstance(), 'adminInit'));
 }

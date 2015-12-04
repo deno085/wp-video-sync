@@ -1,4 +1,5 @@
 //admin JS
+var contentItems=null;
 
 jQuery(document).ready(function() {
 	
@@ -65,7 +66,7 @@ jQuery(document).ready(function() {
            jQuery('#'+jQuery(this).attr('data-target-option')).show();
         });
         
-        if(contentItems && contentItems.length)
+        if(contentItems)
         {
             jQuery.each(contentItems, function (item) {
                itemHtml = _.template(jQuery('#deno-timeline-item').html(), contentItems[item]);

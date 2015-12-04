@@ -37,7 +37,18 @@ class DenoTimelineListTable extends WP_List_Table
      */
     function column_default($item, $column_name)
     {
-        return $item[$column_name];
+        switch($column_name)
+        {
+            case 'name':
+                return '<a href="admin.php?page=deno_timeline_form&id='.$item['id'].'">'.$item['name'].'</a>';
+                break;
+            case 'enabled':
+                return ((int)$item['enabled']==11) ? "Yes" : "No";
+                break;
+            default:
+                return $item[$column_name];
+                break;
+        }        
     }    
     
     /**

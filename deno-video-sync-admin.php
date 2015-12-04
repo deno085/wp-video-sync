@@ -172,37 +172,39 @@ class DenoVideoSyncAdmin
                         {
                             foreach($content as $contentItem)
                             {
+                                $contentItem['timeline_id'] = $item['id'];
                                 $contentResult = $wpdb->insert($content_table, $contentItem);
                                 $contentItem['id'] = $wpdb->insert_id;
                                 $item['content'][] = $contentItem;
                             }
                         }
-                        $message = __('Item was successfully saved', 'custom_table_example');
+                        $message = __('Item was successfully saved');
                     } 
                     else 
                     {
-                        $notice = __('There was an error while saving item', 'custom_table_example');
+                        $notice = __('There was an error while saving item');
                     }
                 } 
                 else 
                 {
-                    $result = $wpdb->update($table_name, $item, array('id' => $item['id']));
-                    if($result) 
+                    $wpdb->update($table_name, $item, array('id' => $item['id']));
+                    if($wpdb->result) 
                     {
                         $wpdb->delete($content_table,"timeline_id= ".$item['id']);
                         $jsonData = stripslashes($_REQUEST['contentData']);
                         $content = json_decode($jsonData, true);
                         foreach($content as $contentItem)
                         {
+                            $contentItem['timeline_id'] = $item['id'];
                             $contentResult = $wpdb->insert($content_table, $contentItem);
                             $contentItem['id'] = $wpdb->insert_id;
                             $item['content'][] = $contentItem;
                         }                        
-                        $message = __('Item was successfully updated', 'custom_table_example');
+                        $message = __('Item was successfully updated');
                     }    
                     else 
                     {
-                        $notice = __('There was an error while updating item', 'custom_table_example');
+                        $notice = __('There was an error while updating item');
                     }
                 }
             } 
@@ -221,7 +223,11 @@ class DenoVideoSyncAdmin
                 if(!$item) 
                 {
                     $item = $default;
-                    $notice = __('Item not found', 'custom_table_example');
+                    $notice = __('Item not found');
+                }
+                else
+                {
+                    $item['content'] = $wpdb->get_results("SELECT * FROM $content_table WHERE timeline_id=".$item['id'], ARRAY_A);
                 }
             }
         }        
@@ -245,7 +251,7 @@ class DenoVideoSyncAdmin
             'post_status'   => array('publish', 'future')
         ));
         $syncPosts = array();
-        while ( $query->have_posts() ) 
+        while($query->have_posts()) 
         {
             $query->the_post();
             $syncPosts[] = array(
