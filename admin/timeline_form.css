@@ -1,0 +1,41 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 29, 2015, 9:39:08 AM
+    Author     : cwalker
+*/
+
+#deno-new-timeline-submit
+{   
+    float: right; 
+    font-weight: bold;    
+}
+
+#deno-timeline-add-new-metabox
+{
+    display: none;
+}
+
+span.deno-timeline-delete-item
+{
+    float: right;
+    margin-right: 10px;
+}
+
+.timeline-settings-form-field label
+{
+    display: block;
+}
+
+textarea.deno-timeline-settings-plain-text-content
+{
+    width: 100%;
+}
+
+select.deno-timeline-settings-select-post-content 
+{
+    width: 100%;
+}
