@@ -150,7 +150,7 @@ class DenoVideoSyncAdmin
             'enabled' => 0,
         );
 
-        if (wp_verify_nonce($_REQUEST['nonce'], 'deno_timeline_edit')) 
+        if(wp_verify_nonce($_REQUEST['nonce'], 'deno_timeline_edit')) 
         {
             $item = array();
             foreach($default as $field=>$value)
@@ -187,7 +187,7 @@ class DenoVideoSyncAdmin
                 else 
                 {
                     $result = $wpdb->update($table_name, $item, array('id' => $item['id']));
-                    if ($result) 
+                    if($result) 
                     {
                         $wpdb->delete($content_table,"timeline_id= ".$item['id']);
                         $jsonData = stripslashes($_REQUEST['contentData']);
@@ -240,10 +240,20 @@ class DenoVideoSyncAdmin
         add_meta_box('timeline_form_meta_box', 'Timeline data', array(DenoVideoSyncAdmin, 'timelineFormMetaBoxHandler'), 'timeline', 'normal', 'default');
         add_meta_box('timeline_form_sidebar_box', 'Add new Content', array(DenoVideoSyncAdmin, 'timelineFormNewContentBoxHandler'), 'timeline', 'side', 'default');
         
-        $syncPosts = array(
-            array('id'=> 1,'title'=>' Sync Post 1'),
-            array('id'=> 2,'title'=>' Sync Post 2')            
-        );
+        $query = new WP_Query(array(
+            'post_type'     => 'deno_sync_content',
+            'post_status'   => array('publish', 'future')
+        ));
+        $syncPosts = array();
+        while ( $query->have_posts() ) 
+        {
+            $query->the_post();
+            $syncPosts[] = array(
+                'id'    => $query->post->ID, 
+                'title' => get_the_title($query->post->ID)
+            );
+        }        
+        wp_reset_postdata();
         include('admin/timeline_form.php');   
     }
     
