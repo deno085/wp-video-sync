@@ -28,6 +28,12 @@ class DenoTimelineListTable extends WP_List_Table
         $this->dbTable = 'deno_videosync_timeline';
     }    
     
+    function column_cb($item) 
+    {
+        return  '<input type="checkbox" name="id[]" id="deno-timeline-cb'.$item['id'].'" value="'.$item['id'].'" />';
+    }
+    
+    
     /**
      * [REQUIRED] this is a default column renderer
      *
@@ -43,7 +49,7 @@ class DenoTimelineListTable extends WP_List_Table
                 return '<a href="admin.php?page=deno_timeline_form&id='.$item['id'].'">'.$item['name'].'</a>';
                 break;
             case 'enabled':
-                return ((int)$item['enabled']==11) ? "Yes" : "No";
+                return ((int)$item['enabled']==1) ? "Yes" : "No";
                 break;
             default:
                 return $item[$column_name];
@@ -127,6 +133,28 @@ class DenoTimelineListTable extends WP_List_Table
                     $wpdb->query("DELETE FROM $table_name WHERE id IN($ids)");
                 }
             break;
+            case 'enable':
+                $ids = isset($_REQUEST['id']) ? $_REQUEST['id'] : array();
+                if (is_array($ids)) 
+                {
+                    $ids = implode(',', $ids);
+                }
+                if (!empty($ids)) 
+                    {
+                    $wpdb->query("UPDATE $table_name SET enabled=1 WHERE id IN($ids)");
+                }
+            break;         
+            case 'disable':
+                $ids = isset($_REQUEST['id']) ? $_REQUEST['id'] : array();
+                if (is_array($ids)) 
+                {
+                    $ids = implode(',', $ids);
+                }
+                if (!empty($ids)) 
+                    {
+                    $wpdb->query("UPDATE $table_name SET enabled=0 WHERE id IN($ids)");
+                }
+            break;                
         }
     }    
     

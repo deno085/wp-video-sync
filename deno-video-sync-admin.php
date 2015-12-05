@@ -190,7 +190,7 @@ class DenoVideoSyncAdmin
                     $wpdb->update($table_name, $item, array('id' => $item['id']));
                     if($wpdb->result) 
                     {
-                        $wpdb->delete($content_table,"timeline_id= ".$item['id']);
+                        $wpdb->delete($content_table, array('timeline_id'=>$item['id']));
                         $jsonData = stripslashes($_REQUEST['contentData']);
                         $content = json_decode($jsonData, true);
                         foreach($content as $contentItem)
