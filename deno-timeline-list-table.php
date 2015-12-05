@@ -51,6 +51,9 @@ class DenoTimelineListTable extends WP_List_Table
             case 'enabled':
                 return ((int)$item['enabled']==1) ? "Yes" : "No";
                 break;
+            case "videourl":
+                return '<a href="'.$item['videourl'].'">'.$item['videourl'].'</a>';
+                break;
             default:
                 return $item[$column_name];
                 break;
@@ -69,7 +72,7 @@ class DenoTimelineListTable extends WP_List_Table
         $columns = array(
             'cb' => '<input type="checkbox" />', //Render a checkbox instead of text
             'name' => __('Name', 'timeline_table'),
-            'video' => __('Video', 'timeline_table'),
+            'videourl' => __('Video', 'timeline_table'),
             'enabled' => __('enabled', 'timeline_table'),
         );
         return $columns;
@@ -86,7 +89,7 @@ class DenoTimelineListTable extends WP_List_Table
     {
         $sortable_columns = array(
             'name' => array('name', true),
-            'video' => array('email', false),
+            'videourl' => array('email', false),
             'enabled' => array('age', false),
         );
         return $sortable_columns;
@@ -177,7 +180,6 @@ class DenoTimelineListTable extends WP_List_Table
         // here we configure table headers, defined in our methods
         $this->_column_headers = array($columns, $hidden, $sortable);
 
-        // [OPTIONAL] process bulk action if any
         $this->process_bulk_action();
 
         // will be used in pagination settings
