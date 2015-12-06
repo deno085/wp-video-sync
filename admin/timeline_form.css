@@ -39,3 +39,10 @@ select.deno-timeline-settings-select-post-content
 {
     width: 100%;
 }
+
+tr.compat-field-deno-timeline-assigned-id,
+tr.compat-field-deno-timeline-assigned-id td, 
+tr.compat-field-deno-timeline-assigned-id th
+{
+    vertical-align: top;
+}

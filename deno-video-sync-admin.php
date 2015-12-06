@@ -63,6 +63,23 @@ class DenoVideoSyncAdmin
             'deno-videosync_platform_options'
         );
         
+
+        
+        wp_enqueue_script('underscore');
+        wp_enqueue_script('jquery-ui-accordion');
+        wp_enqueue_script('deno-video-sync-admin', plugins_url('admin/deno-video-timeline-admin.js',  __FILE__), false);
+        
+        global $wp_scripts;
+        foreach($wp_scripts->registered as $script=>$obj)
+        {
+            if($script=='jquery-ui-core')
+            {
+                $jqueryUIver = $obj->ver;
+                break;
+            }
+        }
+        wp_enqueue_style("deno-timeline-jquery-ui-css", "http://ajax.googleapis.com/ajax/libs/jqueryui/$jqueryUIver/themes/ui-lightness/jquery-ui.min.css");        
+        
         wp_register_style( 'deno_timeline_css', plugins_url('admin/timeline_form.css', __FILE__) );   
         
     }

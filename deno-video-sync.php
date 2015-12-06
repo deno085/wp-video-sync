@@ -10,7 +10,7 @@
  * License: MIT
  */
 require_once('wp-plugin-core/PluginBase.php');
-require_once('deno-timeline-list-table.php');
+require_once('admin/deno-timeline-list-table.php');
 require_once('deno-video-sync-admin.php');
 require_once('deno-video-sync-schema.php');
 
@@ -19,7 +19,8 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
     const DATA_VERSION = 2;
     public $userId = 0;
     public $user = null;
-
+    protected $timelines = array();
+    
     public static function getInstance()
     {
         static $instance = null;
@@ -66,6 +67,18 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
             DenoVideoSyncSchema::getInstance()->migrateData();
         }
         
+    }
+    
+    public function getTimelines()
+    {
+        global $wpdb;
+        
+        if(!is_array($this->timelines) || count($this->timelines)==0)
+        {
+            $table_name = $wpdb->prefix . 'deno_videosync_timeline';
+            $this->timelines = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_name WHERE enabled=1"), ARRAY_A);
+        }
+        return $this->timelines;
     }
 
     public function customPostType()
@@ -155,6 +168,104 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         }        
         return $content;
     }
+    
+    public function videoShortcodeClassFilter($class)
+    {
+        return $class . ' deno-timelime-video-instance';
+    }
+    
+    public function videoShortcodeFilter($output, $atts, $video, $post_id, $library )
+    {
+        $timelineId = 0;
+        if(array_key_exists('sync-timeline', $atts))
+        {
+            $timelineId = (int)$atts['sync-timeline'];
+        }
+        if(!$timelineId)
+        {
+             $timelineId = (int)get_post_meta($post_id, 'deno-timeline-assigned-id', true);
+        }
+        if(!$timelineId)
+        {
+            $timelines = $this->getTimelines();
+            foreach($timelines as $timeline)
+            {
+                $timelineSrc = $timeline['videourl'];
+                foreach($atts as $attr=>$value)
+                {
+                    if($timelineSrc==$value)
+                    {
+                        $timelineId = $timeline['id'];
+                        break;
+                    }
+                }
+                if($timelineId)
+                {
+                    break;
+                }
+            }
+        }
+        if($timelineId)
+        {
+            $output = str_replace('<video ', '<video data-deno-timeline-id="'.$timelineId.'" ', $output);
+        }
+        return $output;
+    }
+
+
+    public function getAttachmentFields($form_fields, $post)
+    {
+        if( substr($post->post_mime_type, 0, 5) == 'video' )
+        {            
+            $value = get_post_meta($post->ID, 'deno-timeline-assigned-id', true);
+            $timelines = $this->getTimelines();
+            $options = '<option value="">No Content Timeline</option>';
+            foreach($timelines as $timeline)
+            {                
+                $select = ($timeline['id']==$value) ? ' selected' : '';
+                $options .= '<option value="'.$timeline['id'].'"'.$select.'>'.$timeline['name'].'</option>';
+            }
+            
+            $form_fields['deno-timeline-assigned-id'] = array(
+                'value' => $value ? $value : '',
+                'label' => __( 'Content Timeline' ),
+                'helps' => __( 'Select a content sync timeline' ),
+                'input' => 'html',
+                'html'  => "<select name=\"attachments[{$post->ID}][deno-timeline-assigned-id]\">$options</select>"
+            );
+        }
+        return $form_fields;
+    }
+    
+    /**
+     * @param array $post
+     * @param array $attachment
+     * @return array
+     */
+    function saveAttachmentFields($post, $attachment) 
+    {     
+        if(array_key_exists('deno-timeline-assigned-id', $attachment))
+        {
+            if( false)
+            {
+                // adding our custom error
+                $post['errors']['deno-timeline-assigned-id']['errors'][] = __('Unable to load video sync timeline');
+            }
+            else
+            {
+                if($attachment['deno-timeline-assigned-id'] !== '')
+                {
+                    update_post_meta($post['ID'], 'deno-timeline-assigned-id', $attachment['deno-timeline-assigned-id']);
+                }
+                else
+                {
+                    delete_post_meta($post['ID'], 'deno-timeline-assigned-id');
+                }                    
+            }
+        }
+        
+        return $post;
+    }    
 }
 
 /* WP event hooks */
@@ -162,21 +273,18 @@ register_activation_hook(__FILE__, array(DenoVideoSync::getInstance(), 'doInstal
 
 add_action( 'plugins_loaded', array(DenoVideoSync::getInstance(), 'checkDataVersion'));
 add_action('init',  array(DenoVideoSync::getInstance(), 'doInit'), 0);
- 
+
+add_filter('wp_video_shortcode', array(DenoVideoSync::getInstance(), 'videoShortcodeFilter'), null, 6);
+
+//adds a class to the video tag in the html renderings
+add_filter('wp_video_shortcode_class', array(DenoVideoSync::getInstance(), 'videoShortcodeClassFilter'));
+
+//Adds a custom field to the media library for videos
+add_filter('attachment_fields_to_edit', array(DenoVideoSync::getInstance(), 'getAttachmentFields' ), null, 2);
+add_filter('attachment_fields_to_save', array(DenoVideoSync::getInstance(), 'saveAttachmentFields'), null, 2);
+
 if(is_admin())
 {
-    wp_enqueue_script('underscore');
-    wp_enqueue_script('jquery-ui-accordion');
-    wp_enqueue_script('deno-video-sync-admin', plugins_url('admin/deno-video-timeline-admin.js',  __FILE__), false);
-    foreach($wp_scripts->registered as $script=>$obj)
-    {
-        if($script=='jquery-ui-core')
-        {
-            $jqueryUIver = $obj->ver;
-            break;
-        }
-    }
-    wp_enqueue_style("deno-timeline-jquery-ui-css", "http://ajax.googleapis.com/ajax/libs/jqueryui/$jqueryUIver/themes/ui-lightness/jquery-ui.min.css");
     add_action('admin_menu', array(DenoVideoSyncAdmin::getInstance(), 'adminMenu'));
     add_action('admin_init', array(DenoVideoSyncAdmin::getInstance(), 'adminInit'));
 }
