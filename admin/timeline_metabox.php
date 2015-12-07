@@ -20,6 +20,15 @@
     </tr>
     <tr class="form-field">
         <th valign="top" scope="row">
+            <label for="container"><?php _e('Content Container')?></label>
+        </th>
+        <td>
+            <input id="email" name="container" type="text" style="width: 95%" value="<?php echo esc_attr($item['container'])?>"
+                   size="50" class="code" placeholder="<?php _e('jQuery Container for content')?>" required>
+        </td>
+    </tr>    
+    <tr class="form-field">
+        <th valign="top" scope="row">
             <label for="enabled"><?php _e('Enabled')?></label>
         </th>
         <td>

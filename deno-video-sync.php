@@ -47,11 +47,28 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         if( !is_admin() )
         {
             wp_enqueue_script('jquery');
-            wp_enqueue_script('deno-video-sync', plugins_url('deno-video-sync.js',  __FILE__), false);
-            wp_enqueue_script('jquery-video-sync', plugins_url('jquery-video-sync.js',  __FILE__), false);
-
+            wp_enqueue_script('jquery-video-sync', plugins_url('js/jquery-video-sync.js',  __FILE__), false);
+            wp_enqueue_script('deno-video-sync', plugins_url('js/deno-video-sync.js',  __FILE__), false);
+            
             wp_localize_script( 'deno-video-sync', 'denoVideoSyncConfig', DenoVideoSync::getInstance()->getConfig());
         }
+    }
+    
+    public function getConfig()
+    {
+        $config = array();
+        $config['pluginConfig'] = parent::getConfig();
+        $config['timelines'] = array();
+        $timelines = $this->getTimelines();
+        foreach($timelines as $timeline)
+        {
+            $contentItems = $this->getTimelineContent($timeline['id']);
+            $config['timelines'][$timeline['id']] = array(
+                'contentContainer'=>$timeline['container'],
+                'content' => $contentItems
+            );         
+        }
+        return $config;
     }
     
     public function doInstall()
@@ -79,6 +96,20 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
             $this->timelines = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table_name WHERE enabled=1"), ARRAY_A);
         }
         return $this->timelines;
+    }
+    
+    public function getTimelineContent($timelineId)
+    {
+        global $wpdb;
+
+        $result = array();
+        $table_name = $wpdb->prefix . 'deno_videosync_timeline_content';
+        $items = $wpdb->get_results($wpdb->prepare("SELECT seconds, content_type, content_data FROM $table_name WHERE timeline_id=".$timelineId." ORDER BY seconds ASC"), ARRAY_A);
+        foreach($items as $item)
+        {
+            $result[$item['seconds']] = trim($this->getSyncContent($item['content_type'], $item['content_data']));
+        }
+        return $result;
     }
 
     public function customPostType()
@@ -169,6 +200,23 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         return $content;
     }
     
+    public function getSyncContent($contentType, $contentData)
+    {
+        $content = '';
+        switch($contentType)
+        {
+            case 'text':
+                $content = $contentData;
+            break;
+            case 'post':
+                $postId = (int)$contentData;
+                $post = get_post($postId);
+                $content = $post->post_content;
+            break;
+        }        
+        return $content;
+    }
+    
     public function videoShortcodeClassFilter($class)
     {
         return $class . ' deno-timelime-video-instance';
@@ -207,7 +255,9 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         }
         if($timelineId)
         {
-            $output = str_replace('<video ', '<video data-deno-timeline-id="'.$timelineId.'" ', $output);
+            $newAttributes  = 'data-deno-timeline-id="'.$timelineId.'" '; 
+            $newAttributes .= 'data-deno-video-timeline-post-id="'.$post_id.'" ';
+            $output = str_replace('<video ', '<video '.$newAttributes, $output);
         }
         return $output;
     }

@@ -161,10 +161,11 @@ class DenoVideoSyncAdmin
 
         // this is default $item which will be used for new records
         $default = array(
-            'id' => 0,
-            'name' => '',
-            'videourl' => '',
-            'enabled' => 0,
+            'id'        => 0,
+            'name'      => '',
+            'videourl'  => '',
+            'container' => '',
+            'enabled'   => 0,
         );
 
         if(wp_verify_nonce($_REQUEST['nonce'], 'deno_timeline_edit')) 

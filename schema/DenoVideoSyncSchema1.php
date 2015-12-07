@@ -31,8 +31,9 @@ class DenoVideoSyncSchema1 implements \DenoPluginCore\SchemaInterface
         $sql = "CREATE TABLE " . $table . " (
         `id` int(11) NOT NULL AUTO_INCREMENT,
         `name` varchar(255) NOT NULL,
-        `videourl` varchar(255) NOT NULL,
-        `enabled` int(11) NOT NULL,
+        `videourl` varchar(255) NOT NULL DEFAULT '',
+        `container` varchar(255) NOT NULL DEFAULT '',
+        `enabled` int(11) NOT NULL DEFAULT 1,
         UNIQUE KEY id (id)
         );";
 
