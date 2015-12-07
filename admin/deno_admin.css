@@ -1,0 +1,12 @@
+/*
+ * Author: Chris Walker
+ * Author URI: http://github.com/deno085
+ * License: MIT
+*/
+
+tr.compat-field-deno-timeline-assigned-id,
+tr.compat-field-deno-timeline-assigned-id td, 
+tr.compat-field-deno-timeline-assigned-id th
+{
+    vertical-align: top;
+}

@@ -1,3 +1,10 @@
+<?php
+/*
+ * Author: Chris Walker
+ * Author URI: http://github.com/deno085
+ * License: MIT
+*/
+?>
 <div class="wrap">
     <form id="deno-timeline-form" method="POST">
         <div class="icon32 icon32-posts-post" id="icon-edit"><br></div>

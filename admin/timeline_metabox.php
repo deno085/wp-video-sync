@@ -1,3 +1,10 @@
+<?php
+/*
+ * Author: Chris Walker
+ * Author URI: http://github.com/deno085
+ * License: MIT
+*/
+?>
 <table cellspacing="2" cellpadding="5" style="width: 100%;" class="form-table">
     <tbody>
     <tr class="form-field">

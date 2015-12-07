@@ -1,10 +1,10 @@
 <?php
+/*
+ * Author: Chris Walker
+ * Author URI: http://github.com/deno085
+ * License: MIT
+*/
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 class DenoVideoSyncSchema2 implements \DenoPluginCore\SchemaInterface
 {
     protected $currentVersion;

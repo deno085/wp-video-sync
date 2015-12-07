@@ -1,3 +1,10 @@
+<?php
+/*
+ * Author: Chris Walker
+ * Author URI: http://github.com/deno085
+ * License: MIT
+*/
+?>
 <form id="timeline-settings-new-text">
     <div class="timeline-settings-form-field">
        <label for="name" style="display: inline"><?php _e('Elapsed Time', 'custom_table_example')?>: </label>

@@ -16,6 +16,11 @@ abstract class PluginBase
 {
     abstract public static function getInstance();
     
+    /**
+     * Name used to store configuration in WP options
+     * 
+     * @var string 
+     */
     protected $optionVarName;
     
     protected function __construct() 
@@ -23,6 +28,13 @@ abstract class PluginBase
         $this->optionVarName = '';
     }
     
+    /**
+     * Returns a single config setting 
+     * 
+     * @param string $name
+     * @param mized $default
+     * @return mixed
+     */
     public function getOption($name, $default='')
     {
         $options = get_option($this->optionVarName);
@@ -33,6 +45,10 @@ abstract class PluginBase
         return $default;
     }  
 
+    /**
+     * Returns all plugin configuration
+     * @return array
+     */
     public function getConfig()
     {
         $config = get_option($this->optionVarName);
@@ -43,6 +59,11 @@ abstract class PluginBase
         return $config;
     }    
     
+    /**
+     * Returns array containing current user information, if applicable
+     * 
+     * @return array
+     */
     protected function getUserData()
     {
         $user = wp_get_current_user();

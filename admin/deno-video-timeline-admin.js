@@ -1,4 +1,8 @@
-//admin JS
+/*
+ * Author: Chris Walker
+ * Author URI: http://github.com/deno085
+ * License: MIT
+*/
 var contentItems=null;
 
 jQuery(document).ready(function() {

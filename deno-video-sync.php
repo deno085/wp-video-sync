@@ -21,6 +21,11 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
     public $user = null;
     protected $timelines = array();
     
+    /**
+     * Get the singleton instance of the plugin
+     * @staticvar type $instance
+     * @return \DenoVideoSync
+     */
     public static function getInstance()
     {
         static $instance = null;
@@ -39,6 +44,12 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         $this->optionVarName = 'deno-videosync_options';
     }
 
+    /**
+     * Initialized the plugin whether in front-end or admin
+     * - Creates the custom post type
+     * - loads the javscript dependencies
+     * - localizes the front-end JS
+     */
     public function doInit()
     {
         $this->customPostType();
@@ -53,7 +64,13 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
             wp_localize_script( 'deno-video-sync', 'denoVideoSyncConfig', DenoVideoSync::getInstance()->getConfig());
         }
     }
-    
+
+    /**
+     * returns data which is converted to json included in the plugin's primary JS file.
+     * Usually, this function would return just the plugin's configuration or state information,
+     * but here we're including the timeline data as well.
+     * @return array
+     */
     public function getConfig()
     {
         $config = array();
@@ -71,11 +88,17 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         return $config;
     }
     
+    /**
+     * Called when the plugin is installed
+     */
     public function doInstall()
     {
         $this->checkDataVersion();
     }
     
+    /**
+     * Uses the schema classes to ensure the plugin's schema and data is up to date.
+     */
     public function checkDataVersion() 
     {
         $installedVersion = DenoVideoSyncSchema::getInstance()->getInstalledVersion();
@@ -85,7 +108,13 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         }
         
     }
-    
+
+    /**
+     * Returns a list of all enabled timelines
+     * 
+     * @global type $wpdb
+     * @return array
+     */
     public function getTimelines()
     {
         global $wpdb;
@@ -98,6 +127,13 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         return $this->timelines;
     }
     
+    /**
+     * Returns a list of timeline content, ordered by the timing, for a given timeline
+     * 
+     * @global type $wpdb
+     * @param int $timelineId
+     * @return array
+     */
     public function getTimelineContent($timelineId)
     {
         global $wpdb;
@@ -112,6 +148,9 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         return $result;
     }
 
+    /**
+     * Hook to add the custom post type to wordpress
+     */
     public function customPostType()
     {
         $labels = array(
@@ -159,25 +198,15 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         // Registering your Custom Post Type
         register_post_type( 'deno_sync_content', $args );
     }
-
-    public function queryPostType($query)
-    {
-        if(is_category() || is_tag())
-        {
-            $post_type = $query->get('post_type'); 
-            if($post_type)
-            {
-                $post_type = $post_type;
-            }
-            else
-            {
-                $post_type = array('post', 'deno-videosync-content');
-            }
-            $query->set('post_type',$post_type);
-            return $query;
-        }
-    }
     
+    /**
+     * Returns a string representation of the sync content passed in
+     * 
+     * @param string $contentType
+     * @param string $contentData
+     * @param int $max_len
+     * @return string
+     */
     public function getContentPreview($contentType, $contentData, $max_len=70)
     {
         $content = '';
@@ -200,6 +229,13 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         return $content;
     }
     
+    /**
+     * Returns the sync content passed in
+     * 
+     * @param string $contentType
+     * @param string $contentData
+     * @return string
+     */    
     public function getSyncContent($contentType, $contentData)
     {
         $content = '';
@@ -216,12 +252,29 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         }        
         return $content;
     }
-    
+
+    /**
+     * Hook on the wordpress video shortcode to add the plugin's class to the video tag
+     * @param type $class
+     * @return string
+     */
     public function videoShortcodeClassFilter($class)
     {
         return $class . ' deno-timelime-video-instance';
     }
     
+    /**
+     * Hook to the wordpress video shortcode to customize the output of the shortcode html.
+     * Adds attributes to the video tag produced by the shortcode:
+     * - data-deno-video-timeline-post-id: post ID being rendered (this is the post the video is embedded in)
+     * - data-deno-timeline-id: timeline ID associated with the video
+     * @param string $output
+     * @param array $atts
+     * @param unknown $video
+     * @param int $post_id
+     * @param string $library
+     * @return string
+     */
     public function videoShortcodeFilter($output, $atts, $video, $post_id, $library )
     {
         $timelineId = 0;
@@ -262,7 +315,12 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
         return $output;
     }
 
-
+    /**
+     * Hook to add a selector to videos in the library to associate a timeline to
+     * @param array $form_fields
+     * @param WP_Post $post
+     * @return array
+     */
     public function getAttachmentFields($form_fields, $post)
     {
         if( substr($post->post_mime_type, 0, 5) == 'video' )
@@ -288,7 +346,8 @@ class DenoVideoSync extends \DenoPluginCore\PluginBase
     }
     
     /**
-     * @param array $post
+     * Hook to save custom fields associated with videos in the WP library
+     * @param WP_Post $post
      * @param array $attachment
      * @return array
      */
@@ -324,9 +383,10 @@ register_activation_hook(__FILE__, array(DenoVideoSync::getInstance(), 'doInstal
 add_action( 'plugins_loaded', array(DenoVideoSync::getInstance(), 'checkDataVersion'));
 add_action('init',  array(DenoVideoSync::getInstance(), 'doInit'), 0);
 
+//Customizes the output of the [video] shortcode
 add_filter('wp_video_shortcode', array(DenoVideoSync::getInstance(), 'videoShortcodeFilter'), null, 6);
 
-//adds a class to the video tag in the html renderings
+//adds a class to the video tag in the html rendering of the [video] shortcone
 add_filter('wp_video_shortcode_class', array(DenoVideoSync::getInstance(), 'videoShortcodeClassFilter'));
 
 //Adds a custom field to the media library for videos
@@ -335,6 +395,7 @@ add_filter('attachment_fields_to_save', array(DenoVideoSync::getInstance(), 'sav
 
 if(is_admin())
 {
+    //admin specific init
     add_action('admin_menu', array(DenoVideoSyncAdmin::getInstance(), 'adminMenu'));
     add_action('admin_init', array(DenoVideoSyncAdmin::getInstance(), 'adminInit'));
 }

@@ -32,13 +32,21 @@ class DenoVideoSyncAdmin
         add_submenu_page('deno_timelines', __('Content Timelines'), __('Timelines'), 'activate_plugins', 'deno_timelines', array(DenoVideoSyncAdmin, 'timelineTablePageHandler'));
         $page = add_submenu_page('deno_timelines', __('Add new timeline'), __('Add new timeline'), 'activate_plugins', 'deno_timeline_form', array(DenoVideoSyncAdmin, 'timelineFormHandler'));
         
+        add_action( 'admin_print_styles', array(DenoVideoSyncAdmin::getInstance(), 'timelineAdminCss'));
         add_action( 'admin_print_styles-'.$page, array(DenoVideoSyncAdmin::getInstance(), 'timelineFormCss'));
+        
+        
     }
     
     public function timelineFormCSS()
     {
         wp_enqueue_style( 'deno_timeline_css' );
     }
+    
+    public function timelineAdminCSS()
+    {
+        wp_enqueue_style( 'deno_admin_css' );
+    }    
 
     public function adminInit()
     {
@@ -78,10 +86,10 @@ class DenoVideoSyncAdmin
                 break;
             }
         }
-        wp_enqueue_style("deno-timeline-jquery-ui-css", "http://ajax.googleapis.com/ajax/libs/jqueryui/$jqueryUIver/themes/ui-lightness/jquery-ui.min.css");        
-        
-        wp_register_style( 'deno_timeline_css', plugins_url('admin/timeline_form.css', __FILE__) );   
-        
+        wp_enqueue_style('deno-timeline-jquery-ui-css', 
+                         "http://ajax.googleapis.com/ajax/libs/jqueryui/$jqueryUIver/themes/ui-lightness/jquery-ui.min.css");        
+        wp_register_style('deno_admin_css', plugins_url('admin/deno_admin.css', __FILE__));          
+        wp_register_style('deno_timeline_css', plugins_url('admin/timeline_form.css', __FILE__));   
     }
 
 

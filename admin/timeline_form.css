@@ -1,11 +1,7 @@
 /*
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
-*/
-/* 
-    Created on : Nov 29, 2015, 9:39:08 AM
-    Author     : cwalker
+ * Author: Chris Walker
+ * Author URI: http://github.com/deno085
+ * License: MIT
 */
 
 #deno-new-timeline-submit
@@ -38,11 +34,4 @@ textarea.deno-timeline-settings-plain-text-content
 select.deno-timeline-settings-select-post-content 
 {
     width: 100%;
-}
-
-tr.compat-field-deno-timeline-assigned-id,
-tr.compat-field-deno-timeline-assigned-id td, 
-tr.compat-field-deno-timeline-assigned-id th
-{
-    vertical-align: top;
 }

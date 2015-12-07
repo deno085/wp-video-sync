@@ -1,10 +1,9 @@
 <?php
-
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/*
+ * Author: Chris Walker
+ * Author URI: http://github.com/deno085
+ * License: MIT
+*/
 
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
@@ -14,9 +13,6 @@ class DenoTimelineListTable extends WP_List_Table
 {
     protected $dbTable;
     
-    /**
-     * [REQUIRED] You must declare constructor and give some basic params
-     */
     function __construct()
     {
         global $status, $page;
@@ -35,7 +31,7 @@ class DenoTimelineListTable extends WP_List_Table
     
     
     /**
-     * [REQUIRED] this is a default column renderer
+     * this is a default column renderer
      *
      * @param $item - row (key, value array)
      * @param $column_name - string (key)
@@ -61,7 +57,7 @@ class DenoTimelineListTable extends WP_List_Table
     }    
     
     /**
-     * [REQUIRED] This method return columns to display in table
+     * This method return columns to display in table
      * you can skip columns that you do not want to show
      * like content, or description
      *
@@ -79,7 +75,7 @@ class DenoTimelineListTable extends WP_List_Table
     }    
 
     /**
-     * [OPTIONAL] This method return columns that may be used to sort table
+     * This method return columns that may be used to sort table
      * all strings in array - is column names
      * notice that true on name column means that its default sort
      *
@@ -96,7 +92,7 @@ class DenoTimelineListTable extends WP_List_Table
     }    
     
     /**
-     * [OPTIONAL] Return array of bult actions if has any
+     * Return array of bult actions if has any
      *
      * @return array
      */
@@ -111,11 +107,7 @@ class DenoTimelineListTable extends WP_List_Table
     }
 
     /**
-     * [OPTIONAL] This method processes bulk actions
-     * it can be outside of class
-     * it can not use wp_redirect coz there is output already
-     * in this example we are processing delete action
-     * message about successful deletion will be shown on page in next part
+     * This method processes bulk actions
      */
     function process_bulk_action()
     {
@@ -161,10 +153,8 @@ class DenoTimelineListTable extends WP_List_Table
         }
     }    
     
-/**
-     * [REQUIRED] This is the most important method
-     *
-     * It will get rows from database and prepare them to be showed in table
+    /**
+     * Gets rows from database and prepares them to be shown in table
      */
     function prepare_items()
     {
